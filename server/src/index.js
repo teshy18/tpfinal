@@ -16,6 +16,8 @@ const {
     sendRefreshToken
  } = require('./tokens');
 
+const { isAuth } = require('./isAuth');
+
 
 const server = express();
 const port = process.env.PORT
@@ -117,7 +119,64 @@ server.post('/login', async (req, res)=>{
 })
 
 
+server.post('/logout', async (req, res)=>{
+    res.clearCookie('refreshToken', {path:'/refresh_tokens'})
+    res.send({
+        message: 'Sesion cerrada'
+    })
+})
 
+server.post('/protected', async (req,res)=>{
+
+    try {
+        const userId = isAuth(req)
+
+        if(userId !== null){
+            res.send({
+                data: 'data protegida'
+            })
+        }
+
+    } catch (error) {
+        res.send({
+            error: `${err.message}`
+        })
+    }
+})
+
+server.post('/refresh_token', (req, res)=>{
+    const token = req.cookies.refreshToken;
+
+    //si no tengo un token devuelvo un accessToken vacio
+    if(!token) return res.send({ accessToken: ''})
+
+    //si tengo un token tengo que verificarlo
+    let payload = null
+    try {
+        payload = verify(token, process.env.REFRESH_TOKEN_SECRET)
+    } catch (error) {
+        return res.send({accessToken: ''})
+    }
+
+    //Token valido >>  Validación del usuario
+    const user = db.find(user => user.id === payload.user)
+    if(!user) return res.send({ accessToken: ''})
+    //Usuario valido >> validación del refreshToken 
+    if(user.refreshToken !== token ) return res.send({ accessToken: ''})
+
+    //Si el usuario  y el token son  validos se crea un accesToken
+    const accessToken = createAccessToken(user.id)
+    const refreshToken = createRefreshToken(user.id)
+    
+    user.refreshToken = refreshToken //se actualiza el token en DB
+
+    sendRefreshToken(res, refreshToken);
+    return res.send({accessToken})
+
+    
+
+
+})
 
 
 // //MONGODB
