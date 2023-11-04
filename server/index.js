@@ -2,54 +2,71 @@ require('dotenv/config')
 
 const express = require('express');
 const cors  = require('cors');
+const mongoose = require('mongoose');
+
 const cookieParser = require('cookie-parser');
 const {verify} = require('jsonwebtoken');
 const {hash, compare} = require('bcryptjs');
 
-const  { MongoClient } = require('mongodb');
-const {db} = require('../db/db');
 
 const { 
     createAccessToken,
     createRefreshToken,
     sendAccessToken,
     sendRefreshToken
- } = require('./tokens');
+ } = require('./middlewares/tokens');
+const { isAuth } = require('./middlewares/isAuth');
 
-const { isAuth } = require('./isAuth');
 
+//CONEXION  A BASE DE DATOS
+const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tpfinal.bg9gdys.mongodb.net/?retryWrites=true&w=majority`
 
-const server = express();
-const port = process.env.PORT
-
-//midlewares
-//manejo de cookies
-server.use(cookieParser())
-
-//CORS ---- cambiar la ruta segun el host del front.
-server.use(
-    cors({
-        origin: 'http://localhost:3000',
-        credentials:true
+mongoose.Promise = global.Promise;
+mongoose.connect(url)
+    .then(() => {
+        
+        console.log("La conexión a la base de datos se ha realizado correctamente")
+    
     })
-    );
-
-//Soporte en peticiones
-server.use(express.json());  //soprta JSON-encoded en bodies request
-server.use(express.urlencoded({extended:true}))  //soporta URL-encoded bodies
+    .catch(err => console.log(err));
 
 
+////SERVIDOR
+const PORT = process.env.PORT
+const app = express();
 
-server.listen(port, () => {
-    console.log(`Servidor corriendo en el puerto ${port}`)
+app.set('view engine', 'ejs');
+
+//MIDDLEWARES
+app.use( cors({
+    origin: 'http://localhost:3000',
+    credentials:true
+}));
+app.use(express.json());  //soprta JSON-encoded en bodies request
+app.use(express.urlencoded({extended:true}))  //soporta URL-encoded bodies
+app.use(cookieParser()) //manejo de cookies (hay que migrarlo al archivo correspondiente.)
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`)
+})
+
+///HASTA ACA TODO BIEN...
+
+
+
+
+
+
+//TODO: Mover las rutas al router
+
+//RUTAS
+app.get('/', (req,res)=>{
+    res.send('hello')
 })
 
 
-server.get('/', (req, res) => {
-res.send('Hello World!')
-})
 
-server.post('/registro', async (req, res)=>{
+app.post('/registro', async (req, res)=>{
     const {email, password} = req.body
 
     try{
@@ -82,7 +99,7 @@ server.post('/registro', async (req, res)=>{
 })
 
 
-server.post('/login', async (req, res)=>{
+app.post('/login', async (req, res)=>{
     const {email, password} = req.body
 
     try{
@@ -119,14 +136,14 @@ server.post('/login', async (req, res)=>{
 })
 
 
-server.post('/logout', async (req, res)=>{
+app.post('/logout', async (req, res)=>{
     res.clearCookie('refreshToken', {path:'/refresh_tokens'})
     res.send({
         message: 'Sesion cerrada'
     })
 })
 
-server.post('/protected', async (req,res)=>{
+app.post('/protected', async (req,res)=>{
 
     try {
         const userId = isAuth(req)
@@ -144,7 +161,7 @@ server.post('/protected', async (req,res)=>{
     }
 })
 
-server.post('/refresh_token', (req, res)=>{
+app.post('/refresh_token', (req, res)=>{
     const token = req.cookies.refreshToken;
 
     //si no tengo un token devuelvo un accessToken vacio
@@ -178,79 +195,4 @@ server.post('/refresh_token', (req, res)=>{
 
 })
 
-
-// //MONGODB
-// //credenciales
-// const user = 'sebastesitore'
-// const password = 'witrYvPkLOWJIMRO'
-
-// //dbconection
-// const uri = `mongodb+srv://${user}:${password}@tpfinal.bg9gdys.mongodb.net/?retryWrites=true&w=majority`
-
-// const client = new MongoClient(uri)
-
-
-// async function run() {
-//     try {
-//         await client.connect();
-//         // database and collection code goes here
-//         const db = client.db("sample_guides");
-//         const coll = db.collection("comets");
-
-//         // FINDS 
-//         // const cursor = coll.find({
-//         //     $and: [{ orderFromSun: { $gt: 2 } }, { orderFromSun: { $lt: 5 } }],
-//         //   });
-
-        
-//         // INSERT
-//         // const docs = [
-//         //     {name: "Halley's Comet", officialName: "1P/Halley", orbitalPeriod: 75, radius: 3.4175, mass: 2.2e14},
-//         //     {name: "Wild2", officialName: "81P/Wild", orbitalPeriod: 6.41, radius: 1.5534, mass: 2.3e13},
-//         //     {name: "Comet Hyakutake", officialName: "C/1996 B2", orbitalPeriod: 17000, radius: 0.77671, mass: 8.8e12}
-//         // ];
-
-//         // //InsertMany
-//         // const result = await coll.insertMany(docs); //el objeto resultado guarda los ids de los objetos insertados en la db
-//         // console.log(result.insertedIds);//imprime el resultado de la operacion insertMany
-
-
-//         // //UPDATE   
-//         // const filter = {};
-//         // const updateDoc = {
-//         //     $mul: {
-//         //         radius: 1.60934
-//         //     }
-//         // };
-//         // const result = await coll.updateMany(filter, updateDoc);
-
-        
-//         // //RESULT
-//         // console.log("Number of documents updated: " + result.modifiedCount);
-//         // //imprime el numero de operaciones realizadas.
-
-//         //DELETE
-//          // delete code goes here
-//     const doc = {
-//         orbitalPeriod: {
-//           $gt: 5,
-//           $lt: 85
-//         }
-//       };
-//       const result = await coll.deleteMany(doc);
-//        // amount deleted code goes here
-//     console.log("Number of documents deleted: " + result.deletedCount);
-
-        
-//         // const cursor = coll.find()
-//         // // iterate code goes here
-//         // await cursor.forEach(console.log);
-
-//     } finally {
-//         // Ensures that the client will close when you finish/error
-//         await client.close();
-//     }
-// }
-
-// run().catch(console.dir);
 
