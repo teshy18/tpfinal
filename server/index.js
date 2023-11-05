@@ -16,6 +16,7 @@ const {
     sendRefreshToken
  } = require('./middlewares/tokens');
 const { isAuth } = require('./middlewares/isAuth');
+const router = require('./routes');
 
 
 //CONEXION  A BASE DE DATOS
@@ -39,7 +40,7 @@ app.set('view engine', 'ejs');
 
 //MIDDLEWARES
 app.use( cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://127.0.0.1:5500',
     credentials:true
 }));
 app.use(express.json());  //soprta JSON-encoded en bodies request
@@ -53,16 +54,17 @@ app.listen(PORT, () => {
 ///HASTA ACA TODO BIEN...
 
 
-
+app.use(router)
 
 
 
 //TODO: Mover las rutas al router
 
 //RUTAS
-app.get('/', (req,res)=>{
-    res.send('hello')
-})
+// app.get('/', (req,res)=>{
+//     console.log(req.body)
+//     res.send('hello')
+// })
 
 
 

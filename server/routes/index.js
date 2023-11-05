@@ -9,12 +9,24 @@ router.use(function timeLog(req, res, next) {
 
 // define the home page route
 router.get('/', function(req, res) {
+  console.log('usuario en main..')
   res.send('Main');
 });
 
-// define the about route
+
+//Login
+router.get('/login', function(req, res) {
+  res.send('LOGIN');
+});
+
 router.post('/login', function(req, res) {
   res.send('About birds');
 });
+
+//REGISTER
+router.get('/register', function(req, res) {
+  res.send('Registrar usuario');
+});
+
 
 module.exports = router;
