@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
 
 //Login
 router.get('/login', function(req, res) {
-  res.send('LOGIN');
+  res.render('login');
 });
 
 router.post('/login', function(req, res) {
