@@ -8,6 +8,8 @@ const Schema = mongoose.Schema;
 const UserSchema = Schema({
     email: String,
     password: String,
+    nick: String,
+    refreshToken: String
 });
 
 // Exportamos el modelo para usarlo en otros ficheros

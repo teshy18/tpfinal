@@ -17,6 +17,7 @@ const {
  } = require('./services/tokens');
 const { isAuth } = require('./services/isAuth');
 const router = require('./routes');
+const { getUser } = require('./controllers/user');
 
 
 //CONEXION  A BASE DE DATOS
@@ -39,13 +40,14 @@ const app = express();
 app.set('view engine', 'ejs');
 
 //MIDDLEWARES
-app.use( cors({
-    origin: 'http://127.0.0.1:5500',
-    credentials:true
-}));
+app.use( cors());
 app.use(express.json());  //soprta JSON-encoded en bodies request
 app.use(express.urlencoded({extended:true}))  //soporta URL-encoded bodies
 app.use(cookieParser()) //manejo de cookies
+
+app.use(express.static('public'));
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`)
@@ -153,38 +155,38 @@ app.post('/protected', async (req,res)=>{
     }
 })
 
-app.post('/refresh_token', (req, res)=>{
-    const token = req.cookies.refreshToken;
+// app.post('/refresh_tokens', (req, res)=>{
+//     const token = req.cookies.refreshToken;
 
-    //si no tengo un token devuelvo un accessToken vacio
-    if(!token) return res.send({ accessToken: ''})
+//     //si no tengo un token devuelvo un accessToken vacio
+//     if(!token) return res.send({ accessToken: ''})
 
-    //si tengo un token tengo que verificarlo
-    let payload = null
-    try {
-        payload = verify(token, process.env.REFRESH_TOKEN_SECRET)
-    } catch (error) {
-        return res.send({accessToken: ''})
-    }
+//     //si tengo un token tengo que verificarlo
+//     let payload = null
+//     try {
+//         payload = verify(token, process.env.REFRESH_TOKEN_SECRET)
+//     } catch (error) {
+//         return res.send({accessToken: ''})
+//     }
 
-    //Token valido >>  Validación del usuario
-    const user = db.find(user => user.id === payload.user)
-    if(!user) return res.send({ accessToken: ''})
-    //Usuario valido >> validación del refreshToken 
-    if(user.refreshToken !== token ) return res.send({ accessToken: ''})
+//     //Token valido >>  Validación del usuario
+//     const user = getUser(req, res)
+//     if(!user) return res.send({ accessToken: ''})
+//     //Usuario valido >> validación del refreshToken 
+//     if(user.refreshToken !== token ) return res.send({ accessToken: ''})
 
-    //Si el usuario  y el token son  validos se crea un accesToken
-    const accessToken = createAccessToken(user.id)
-    const refreshToken = createRefreshToken(user.id)
+//     //Si el usuario  y el token son  validos se crea un accesToken
+//     const accessToken = createAccessToken(user.email)
+//     const refreshToken = createRefreshToken(user.email)
     
-    user.refreshToken = refreshToken //se actualiza el token en DB
+//     user.refreshToken = refreshToken //se actualiza el token en DB
 
-    sendRefreshToken(res, refreshToken);
-    return res.send({accessToken})
+//     sendRefreshToken(res, refreshToken);
+//     return res.send({accessToken})
 
     
 
 
-})
+// })
 
 

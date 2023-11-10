@@ -21,7 +21,6 @@ const sendAccessToken = ( req, res ,accessToken ) => {
 } 
 
 const sendRefreshToken = ( res,  refreshToken ) => {
-
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true, 
         path: '/refresh_token'
