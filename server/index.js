@@ -14,13 +14,13 @@ const {
     createRefreshToken,
     sendAccessToken,
     sendRefreshToken
- } = require('./middlewares/tokens');
-const { isAuth } = require('./middlewares/isAuth');
+ } = require('./services/tokens');
+const { isAuth } = require('./services/isAuth');
 const router = require('./routes');
 
 
 //CONEXION  A BASE DE DATOS
-const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tpfinal.bg9gdys.mongodb.net/?retryWrites=true&w=majority`
+const url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tpfinal.bg9gdys.mongodb.net/tpfinal?retryWrites=true&w=majority`
 
 mongoose.Promise = global.Promise;
 mongoose.connect(url)
@@ -45,26 +45,16 @@ app.use( cors({
 }));
 app.use(express.json());  //soprta JSON-encoded en bodies request
 app.use(express.urlencoded({extended:true}))  //soporta URL-encoded bodies
-app.use(cookieParser()) //manejo de cookies (hay que migrarlo al archivo correspondiente.)
+app.use(cookieParser()) //manejo de cookies
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`)
 })
 
-///HASTA ACA TODO BIEN...
-
-
 app.use(router)
 
 
-
-//TODO: Mover las rutas al router
-
-//RUTAS
-// app.get('/', (req,res)=>{
-//     console.log(req.body)
-//     res.send('hello')
-// })
+///HASTA ACA TODO BIEN...
 
 
 
@@ -101,41 +91,41 @@ app.post('/registro', async (req, res)=>{
 })
 
 
-app.post('/login', async (req, res)=>{
-    const {email, password} = req.body
+// app.post('/login', async (req, res)=>{
+//     const {email, password} = req.body
 
-    try{
-        // Se verifica si el usuario existe
-        const user = db.find(user => user.email === email)
+//     try{
+//         // Se verifica si el usuario existe
+//         const user = db.find(user => user.email === email)
         
-        // Si el usuario no existe se envia un error
-        if (!user){
-            throw new Error('El usuario no existe')
-        }
+//         // Si el usuario no existe se envia un error
+//         if (!user){
+//             throw new Error('El usuario no existe')
+//         }
 
-        //se valida la contraseña 
-        const valid = await compare(password, user.password)
-        if (!valid) throw new Error('La contraseña es incorrecta')
+//         //se valida la contraseña 
+//         const valid = await compare(password, user.password)
+//         if (!valid) throw new Error('La contraseña es incorrecta')
         
-        //se crea el accesstoken y refreshtoken
-        const accessToken = createAccessToken(user.id)
-        const refreshToken = createRefreshToken(user.id)
+//         //se crea el accesstoken y refreshtoken
+//         const accessToken = createAccessToken(user.id)
+//         const refreshToken = createRefreshToken(user.id)
 
-        //se guerda el RefreshToken en la DB
-        user.refreshToken = refreshToken
+//         //se guerda el RefreshToken en la DB
+//         user.refreshToken = refreshToken
 
-        //se envia el refreshtoken como cookie y el acces de forma normal. 
-        sendAccessToken(req, res, accessToken)
-        sendRefreshToken(res, refreshToken)
+//         //se envia el refreshtoken como cookie y el acces de forma normal. 
+//         sendAccessToken(req, res, accessToken)
+//         sendRefreshToken(res, refreshToken)
         
         
 
-    }catch (err){
-        res.send({
-            error: `${err.message}`
-        })
-    }
-})
+//     }catch (err){
+//         res.send({
+//             error: `${err.message}`
+//         })
+//     }
+// })
 
 
 app.post('/logout', async (req, res)=>{
