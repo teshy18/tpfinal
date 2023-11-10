@@ -57,7 +57,10 @@ module.exports = {
         
         //se valida la contraseña 
         const valid = await compare(password, user.password)
-        if (!valid) throw new Error('La contraseña es incorrecta')
+        if (!valid){
+          throw new Error('La contraseña es incorrecta')
+        } 
+          
         
         //se crea el accesstoken y refreshtoken
         const accessToken = createAccessToken(user._id.toHexString())
@@ -69,7 +72,7 @@ module.exports = {
         await user.save()
         
         
-        console.log(`usuario '${user.nick} logueado con exito!`)
+        console.log(`usuario: '${user.nick}' logueado con exito!`)
 
         // //se envia el refreshtoken como cookie y el access de forma normal. 
         sendRefreshToken(res, refreshToken)
@@ -78,9 +81,9 @@ module.exports = {
         
 
     }catch (error){
-      console.error();
+      console.log(error.message);
         res.send({
-            error: `${error}`
+            error: `${error.message}`
         })
     }
   }

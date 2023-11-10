@@ -1,47 +1,63 @@
-let user = undefined
-
+let user ={}
 $(document).ready(function () {
+
 
 // 1 - se oculta lo ocion de iniciar sesión si existe un usuario logueado
 // 2 - se muestra el boton de cerrar sesión en caso de que exista un usuario 
-if(user){
+if(!user){
     $('#banner').addClass('visually-hidden')
     $('#navbar').removeClass('visually-hidden')
 }
 
 
-$.get( "http://127.0.0.1:4000/posts", data =>{
-        data
-    } );    
+// $.get( "http://127.0.0.1:4000/posts", data =>{
+//         data
+//     } );    
 
 
 
 /// BOTONES DEL BANNER
-$('#iniciar').click(function(event){
-    event.preventDefault();
-
-    $.get( "http://127.0.0.1:4000/login", data =>{
-        $('#banner').addClass('visually-hidden')
-        $('#main').replaceWith(data)
-    } );    
+// $('#iniciar').click(function(event){
+//     // event.preventDefault();
+//     $.get("http://127.0.0.1:4000/login")
+//     // $.get( "http://127.0.0.1:4000/login", data =>{
+//     //     $('#banner').addClass('visually-hidden')
+//     //     $('#main').replaceWith(data)
+//     // } );    
     
-})
+// })
 
-$('#registrar').click(function(event){
-    event.preventDefault();
-    console.log('realizando peticion de registro')
+// // $('#registrar').click(function(event){
+// //     event.preventDefault();
+// //     console.log('realizando peticion de registro')
 
-    $.get( "http://127.0.0.1:4000/register", data =>{
-        console.log(data)
-    } );    
+// //     $.get( "http://127.0.0.1:4000/register", data =>{
+// //         console.log(data)
+// //     } );    
     
-})
+// // })
 
+
+$('#password').on('change', ({target})=>{
+    user.password = target.value
+
+})
+$('#email').on('change', ({target})=>{
+    user.email = target.value
+  
+})
 
 ////Formulario
 $('#login').click(function(event){
     event.preventDefault();
-    console.log('logueando')
+
+    console.log('logueando', user)
+
+    $.post("http://127.0.0.1:4000/login",user).done(
+        data=>console.log(data)
+    )
+
+
 })
 
 

@@ -23,7 +23,7 @@ router.get('/login', function(req, res) {
 });
 
 router.post('/login', function(req, res) {
-
+  console.log('logueando' , req.body)
   loginUser(req, res) 
 
  
@@ -33,8 +33,7 @@ router.post('/login', function(req, res) {
 
 //REGISTER
 router.get('/register', function(req, res) {
-  addUserP(req, res)
-  res.send('Registrar usuario');
+  res.render('registro');
 });
 
 router.post('/refresh_token', (req, res)=>{
