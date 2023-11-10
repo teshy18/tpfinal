@@ -10,8 +10,8 @@ if(user){
 }
 
 
-$.get( "http://127.0.0.1:4000/", data =>{
-        console.log(data)
+$.get( "http://127.0.0.1:4000/posts", data =>{
+        data
     } );    
 
 
@@ -19,7 +19,6 @@ $.get( "http://127.0.0.1:4000/", data =>{
 /// BOTONES DEL BANNER
 $('#iniciar').click(function(event){
     event.preventDefault();
-    console.log('realizando peticion')
 
     $.get( "http://127.0.0.1:4000/login", data =>{
         $('#banner').addClass('visually-hidden')

@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
 
@@ -23,69 +25,9 @@
 
 <body>
 
-  <header>
-    <h1 class="bg-info text-white py-2 text-center"> Ve Ele | Foro IT </h1>
-  </header>
   
- 
-  <nav 
-  id="navbar"
-  class="navbar navbar-expand-lg navbar-dark bg-info mb-2 visually-hidden" 
-  style="top: -10px">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Bienvenido! </a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <div class="collapse navbar-collapse text-center" id="navbarText">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="">Inicio</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/perfil">Perfil</a>
-          </li>
-          
-        </ul>
-        <button 
-        id="salir" 
-        class="btn btn-danger">
-          <i class="fa-solid fa-arrow-right-to-bracket " style="color: #ffffff;"></i>
-          Cerrar Sesión
-        </button>
-        
-      </div>
-    </div>
-  </nav>
-  <!-- Para cambiar cuando desarrolle un navbar -->
-  <!-- visually-hidden  clase para ocultar la visibilidad -->
   
-  <div 
-  class="container-fluid p-1 text-center"  
-  id="banner"
-  style="background-color: rgba(255, 255, 255, 0.63)">
-
-
-    <p>
-      Debes iniciar sesión para publicar contenido
-    </p>
-      
-      <button 
-      id="iniciar" 
-      class="btn btn-primary">
-        <i class="fa-solid fa-arrow-right-to-bracket " style="color: #ffffff;"></i>
-        Iniciar Sesión
-      </button>
-      <button 
-      id="registrar" 
-      class="btn btn-success">
-        <i class="fa-solid fa-pencil " style="color: #ffffff;"></i>
-        Registrarse
-      </button>
-      
-  </div>
+  <%- include('header'); -%>
 
 
   <main id="main">

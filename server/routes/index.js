@@ -25,7 +25,7 @@ router.get('/login', function(req, res) {
 router.post('/login', function(req, res) {
 
   loginUser(req, res) 
-  res.render('main')
+
  
 
   // res.send('logueando');
@@ -37,7 +37,7 @@ router.get('/register', function(req, res) {
   res.send('Registrar usuario');
 });
 
-router.post('/refresh_tokens', (req, res)=>{
+router.post('/refresh_token', (req, res)=>{
   const token = req.cookies.refreshToken;
   console.log('buscando refrehstoken...')
   //si no tengo un token devuelvo un accessToken vacio
